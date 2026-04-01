@@ -1,0 +1,111 @@
+###user register
+
+POST http://localhost:6767/user-api/users
+Content-Type: application/json
+
+{
+    "firstName":"Vishal",
+    "lastName":"Ludhani",
+    "email":"Vishal@gmail.com",
+    "password":"vishal"
+}
+
+###Author resgister
+POST http://localhost:6767/author-api/users
+Content-Type: application/json
+
+{
+    "firstName":"Anita",
+    "lastName":"Ludhani",
+    "email":"Anita@gmail.com",
+    "password":"anita"
+}
+
+
+###Login
+POST http://localhost:6767/common-api/login
+Content-Type: application/json
+
+{
+    "email":"test3@gmail.com",
+    "password":"test3"
+}
+
+###Admin read articles
+GET http://localhost:6767/admin-api/read-articles/698ac06d996391f4bf4fac7a
+
+###Admin block users
+GET http://localhost:6767/admin-api/block-user/698965a7ec0c0bfd7bceda8a
+
+###Admin Unblock users
+GET http://localhost:6767/admin-api/unblock-user/698965a7ec0c0bfd7bceda8a
+
+###Publish Article
+POST http://localhost:6767/author-api/articles
+Content-Type: application/json
+
+{
+    "author":"69ae8c0cbbf1e5d04c12a3ff",
+    "title":"test2 article",
+    "category":"Study",
+    "content":"Programming is very difficult bro2"
+}
+
+###read articles by author
+GET http://localhost:6767/author-api/articles
+
+###update article
+PUT http://localhost:6767/author-api/articles
+Content-Type: application/json
+
+{
+    "author":"6989900df03905de5bb1fd84",
+    "articleid":"6989a0889c01a0c41dcc7f03",
+    "title":"test1 article",
+    "category":"programming",
+    "content":"Programming is Difficult"
+}
+
+###soft delete
+PATCH http://localhost:6767/author-api/article-delete
+Content-Type: application/json
+
+{
+    "articleid":"69ae8c2dbbf1e5d04c12a401"
+}
+
+###Logout
+GET http://localhost:6767/common-api/logout
+
+###Read articles as user
+GET http://localhost:6767/user-api/read-articles/
+
+###Add Comments
+PUT http://localhost:6767/user-api/comments
+Content-Type: application/json
+
+{
+    "user":"69c37c847fbd4cff291bdad1",
+    "articleId":"69ae8c2dbbf1e5d04c12a401",
+    "comment":"This is a very bad article. 5 stars"
+}
+
+###Change Password
+PUT http://localhost:6767/common-api/change-password
+Content-Type: application/json
+
+{
+    "email":"satish@gmail.com",
+    "oldp":"admin",
+    "newp":"Satish"
+}
+
+###GET ARTICLE BY ID
+GET http://localhost:6767/user-api/article/69ae8c2dbbf1e5d04c12a401
+
+
+###Test res
+GET http://localhost:6767/test
+
+###REFRESH 
+GET http://localhost:6767/common-api/check-auth

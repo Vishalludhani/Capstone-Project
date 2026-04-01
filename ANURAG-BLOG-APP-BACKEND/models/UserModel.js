@@ -1,0 +1,37 @@
+import { Schema,model } from "mongoose";
+
+const userSchema = new Schema({
+    firstName:{
+        type:String,
+        required: [true,"First name is required"]
+    },
+    lastName:{
+        type:String
+    },
+    email:{
+        type:String,
+        required:[true,"Email is required"],
+        unique: [true,"Email already exists"]
+    },
+    password:{
+        type:String,
+        required:[true,"Enter valid password"]
+    },
+    profileImageUrl:{
+        type:String
+    },
+    role:{
+        type:String,
+        enum: ["AUTHOR","USER","ADMIN"],//Check if the value is either of the enum values, if not, enum sends an error
+    },
+    isActive:{
+        type:Boolean,
+        default:true
+    }
+},{
+    timestamps:true,
+    strict:"throw",
+    versionKey:false
+}) 
+
+export const UserTypeModel=model("user",userSchema)
