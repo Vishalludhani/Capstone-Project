@@ -1,9 +1,24 @@
 import exp from 'express'
 import { authenticate } from '../services/authService.js'
 import { UserTypeModel } from '../models/UserModel.js'
+import { ArticleModel } from '../models/ArticalModel.js'
 import bcrypt from 'bcryptjs'
 import {verifyToken} from '../middlewares/verifyToken.js'
 export const commonRoute=exp.Router()
+
+// Get public articles for home page
+commonRoute.get('/public-articles', async (req, res) => {
+    try {
+        let articles = await ArticleModel.find({ isArticleActive: true })
+            .populate({ path: "author", select: "firstName email" })
+            .populate({ path: "comments.user", select: "firstName email" })
+            .sort({ updatedAt: -1 })
+            .limit(10);
+        res.status(200).json({ message: "Public articles", payload: articles });
+    } catch (err) {
+        res.status(500).json({ message: err.message });
+    }
+})
 
 //login
 commonRoute.post("/login",async(req,res)=>{

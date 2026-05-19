@@ -4,6 +4,8 @@ import { useAuth } from '../store/authStore'
 import toast from 'react-hot-toast'
 import UsersList from './UsersList'
 import AuthorsList from './AuthorsList'
+import ArticlesList from './ArticlesList'
+import AdminOverview from './AdminOverview'
 import {
   pageWrapper,
   pageTitleClass,
@@ -11,27 +13,17 @@ import {
   pageHeaderRow,
 } from '../styles/common'
 
-const TABS = ['Users', 'Authors']
+const TABS = ['Overview', 'Users', 'Authors', 'Articles']
 
 function AdminDashboard() {
-  const logout = useAuth((state) => state.logout)
   const navigate = useNavigate()
-  const [activeTab, setActiveTab] = useState('Users')
-
-  const handleLogout = async () => {
-    toast.success('Logged out successfully')
-    await logout()
-    navigate('/login')
-  }
+  const [activeTab, setActiveTab] = useState('Overview')
 
   return (
     <div className={pageWrapper}>
       {/* Header */}
       <div className={pageHeaderRow}>
         <h1 className={pageTitleClass}>Admin Dashboard</h1>
-        <button onClick={handleLogout} className={`${secondaryBtn} cursor-pointer`}>
-          Logout
-        </button>
       </div>
 
       {/* Tabs */}
@@ -52,8 +44,10 @@ function AdminDashboard() {
       </div>
 
       {/* Tab content */}
+      {activeTab === 'Overview' && <AdminOverview />}
       {activeTab === 'Users' && <UsersList />}
       {activeTab === 'Authors' && <AuthorsList />}
+      {activeTab === 'Articles' && <ArticlesList />}
     </div>
   )
 }

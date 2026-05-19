@@ -57,15 +57,17 @@ userRoute.get('/read-articles', verifyToken("USER"), async (req, res) => {
 
 //Add comment to an article(Protected Route)
 userRoute.put('/comments', verifyToken("USER"), async (req, res) => {
-    let { user, articleId, comment } = req.body
-    if (user != req.user.userId) {
-        return res.status(403).json({ message: "Forbidden" })
+    let { articleId, comment } = req.body
+    let userId = req.user.userId;
+
+    let commented_user = await UserTypeModel.findById(userId)
+
+    if (!commented_user) {
+        return res.status(404).json({ message: "User not found" })
     }
 
-    let commented_user = await UserTypeModel.findById(user)
-
     let articleWithComment = await ArticleModel.findByIdAndUpdate(articleId, {
-        $push: { comments: { user, comment } }
+        $push: { comments: { user: userId, comment } }
     },
         { new: true, runValidators: true }
     ).populate({path: "comments.user",select:"email"})
@@ -83,3 +85,53 @@ userRoute.get('/article/:articleId', verifyToken("USER"), async (req, res) => {
     console.log(article)
     res.status(200).json({ message: "Article is: ", payload: article })
 })
+
+//Save Article
+userRoute.post('/save-article', verifyToken("USER"), async (req, res) => {
+    try {
+        const { articleId } = req.body;
+        const userId = req.user.userId;
+        const updatedUser = await UserTypeModel.findByIdAndUpdate(
+            userId,
+            { $addToSet: { savedArticles: articleId } },
+            { new: true }
+        );
+        res.status(200).json({ message: "Article saved", payload: updatedUser.savedArticles });
+    } catch (err) {
+        res.status(500).json({ message: err.message });
+    }
+});
+
+//Unsave Article
+userRoute.delete('/unsave-article/:articleId', verifyToken("USER"), async (req, res) => {
+    try {
+        const articleId = req.params.articleId;
+        const userId = req.user.userId;
+        const updatedUser = await UserTypeModel.findByIdAndUpdate(
+            userId,
+            { $pull: { savedArticles: articleId } },
+            { new: true }
+        );
+        res.status(200).json({ message: "Article removed from saved", payload: updatedUser.savedArticles });
+    } catch (err) {
+        res.status(500).json({ message: err.message });
+    }
+});
+
+//Get Saved Articles
+userRoute.get('/saved-articles', verifyToken("USER"), async (req, res) => {
+    try {
+        const userId = req.user.userId;
+        const user = await UserTypeModel.findById(userId).populate({
+            path: 'savedArticles',
+            populate: { path: 'author', select: 'firstName email' }
+        });
+        
+        // Filter out any articles that might have been hard-deleted or disabled
+        const activeSavedArticles = user.savedArticles.filter(a => a && a.isArticleActive);
+        
+        res.status(200).json({ message: "Saved articles", payload: activeSavedArticles });
+    } catch (err) {
+        res.status(500).json({ message: err.message });
+    }
+});

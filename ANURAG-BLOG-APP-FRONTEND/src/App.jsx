@@ -2,6 +2,7 @@ import React from 'react'
 import { createBrowserRouter, RouterProvider } from 'react-router'
 import RootLayout from './components/RootLayout'
 import Home from './components/Home'
+import Articles from './components/Articles'
 import Login from './components/Login'
 import Register from './components/Register'
 import UserDashboard from './components/UserDashboard'
@@ -36,6 +37,10 @@ function App() {
                 {
                     path: "",
                     element: <Home />
+                },
+                {
+                    path: "articles",
+                    element: <Articles />
                 },
                 {
                     path: "login",

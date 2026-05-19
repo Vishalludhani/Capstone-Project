@@ -32,6 +32,8 @@ function ArticleById() {
     const [comments, setComments] = useState(articleObj?.comments || [])
     const [commentText, setCommentText] = useState('')
     const [submitting, setSubmitting] = useState(false)
+    const [isSaved, setIsSaved] = useState(false)
+    const [saving, setSaving] = useState(false)
 
     if (!articleObj) {
         return <div className={errorClass}>No article found (refresh issue)</div>
@@ -46,7 +48,6 @@ function ArticleById() {
             const res = await axios.put(
                 'http://localhost:6767/user-api/comments',
                 {
-                    user: currentUser.userId,
                     articleId: articleObj._id,
                     comment: commentText.trim(),
                 },
@@ -63,13 +64,46 @@ function ArticleById() {
         }
     }
 
+    const handleSaveArticle = async () => {
+        setSaving(true)
+        try {
+            await axios.post(
+                'http://localhost:6767/user-api/save-article',
+                { articleId: articleObj._id },
+                { withCredentials: true }
+            )
+            setIsSaved(true)
+            toast.success('Article saved to your dashboard!')
+        } catch (err) {
+            toast.error(err.response?.data?.message || 'Failed to save article')
+        } finally {
+            setSaving(false)
+        }
+    }
+
     return (
         <div className={pageWrapper}>
-            {/* Article */}
-            <h1 className={articleTitle}>{articleObj?.title}</h1>
-            <p className={articleAuthorLine}>
-                By {articleObj?.author?.firstName || 'Unknown'}
-            </p>
+            {/* Article Header */}
+            <div className="flex justify-between items-start mb-6">
+                <div>
+                    <h1 className={articleTitle}>{articleObj?.title}</h1>
+                    <p className={articleAuthorLine}>
+                        By {articleObj?.author?.firstName || 'Unknown'}
+                    </p>
+                </div>
+                {currentUser?.role === 'USER' && (
+                    <button
+                        onClick={handleSaveArticle}
+                        disabled={saving || isSaved}
+                        className={`border border-[#e7e3d9] px-4 py-2 rounded-full text-sm font-medium transition cursor-pointer ${
+                            isSaved ? 'bg-green-50 text-green-700 border-green-200 cursor-default' : 'text-[#1a1a1a] hover:bg-[#f0eee8]'
+                        }`}
+                    >
+                        {isSaved ? 'Saved' : (saving ? 'Saving...' : 'Bookmark')}
+                    </button>
+                )}
+            </div>
+
             <p className={articleBody}>{articleObj?.content}</p>
 
             <div className={divider} />

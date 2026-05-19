@@ -59,29 +59,21 @@ authorRoute.post('/articles', verifyToken("AUTHOR"), async (req, res) => {
 })
 //Read articles of author
 authorRoute.get("/articles", verifyToken("AUTHOR"), async (req, res) => {
-  //get author id
-  //check for the author
-  // let authorizedAuthor= await UserTypeModel.findById(aid)
-  // if(!authorizedAuthor || authorizedAuthor.role!="AUTHOR"){
-  //     res.status(401).json({message:"author is invalid"})
-  // }
-  //read articles of this author
-  let articles = await ArticleModel.find({ isArticleActive: true ,}).populate({ path: "author", select: "firstName email" })
+  //read articles of this author using req.user.userId
+  let articles = await ArticleModel.find({ isArticleActive: true, author: req.user.userId }).populate({ path: "author", select: "firstName email" })
   //send response
   res.status(201).json({ message: "Articles are", payload: articles })
 })
 //Edit Article
 authorRoute.put('/articles', verifyToken("AUTHOR"), async (req, res) => {
   //get the modified article
-  let { author, articleid, title, content, category } = req.body
-  //find article
-  let oldarticle = await ArticleModel.findOne({ _id: articleid, author: author })
+  let { articleid, title, content, category } = req.body
+  const authorId = req.user.userId;
+  //find article ensuring ownership
+  let oldarticle = await ArticleModel.findOne({ _id: articleid, author: authorId })
   if (!oldarticle) {
-    res.status(404).json({ message: "article does not exist" })
+    return res.status(404).json({ message: "article does not exist or unauthorized" })
   }
-  // if(author!=oldarticle.author){
-  //     res.status(404).json({message:"Wrong Author"})
-  // }
   //update the article
   let updatedArticle = await ArticleModel.findByIdAndUpdate(articleid, {
     $set: { title, category, content }

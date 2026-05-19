@@ -26,7 +26,6 @@ import {
 } from '../styles/common'
 
 function AuthorDashboard() {
-  const logout = useAuth((state) => state.logout)
   const navigate = useNavigate()
 
   const [articles, setArticles] = useState([])
@@ -103,12 +102,6 @@ function AuthorDashboard() {
     fetchArticles()
   }
 
-  const handleLogout = async () => {
-    toast.success('Logged out successfully')
-    await logout()
-    navigate('/login')
-  }
-
   // ── Render ───────────────────────────────────────────────
 
   return (
@@ -120,11 +113,24 @@ function AuthorDashboard() {
           <button onClick={handleCreate} className={`${primaryBtn} cursor-pointer`}>
             + New Article
           </button>
-          <button onClick={handleLogout} className={`${secondaryBtn} cursor-pointer`}>
-            Logout
-          </button>
         </div>
       </div>
+
+      {/* Stats Ribbon */}
+      {!loading && !error && (
+        <div className="bg-white border border-[#e7e3d9] rounded-xl p-6 mb-10 flex gap-12 shadow-sm">
+          <div>
+            <p className="text-[#8a8a8a] text-sm uppercase tracking-wider font-semibold mb-1">Total Published</p>
+            <p className="text-3xl font-serif text-[#1a1a1a]">{articles.length}</p>
+          </div>
+          <div>
+            <p className="text-[#8a8a8a] text-sm uppercase tracking-wider font-semibold mb-1">Total Comments</p>
+            <p className="text-3xl font-serif text-[#1a1a1a]">
+              {articles.reduce((acc, article) => acc + (article.comments?.length || 0), 0)}
+            </p>
+          </div>
+        </div>
+      )}
 
       {/* Feedback states */}
       {loading && <div className={loadingClass}>Loading your articles…</div>}

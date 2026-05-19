@@ -27,7 +27,11 @@ const userSchema = new Schema({
     isActive:{
         type:Boolean,
         default:true
-    }
+    },
+    savedArticles: [{
+        type: Schema.Types.ObjectId,
+        ref: 'article'
+    }]
 },{
     timestamps:true,
     strict:"throw",
