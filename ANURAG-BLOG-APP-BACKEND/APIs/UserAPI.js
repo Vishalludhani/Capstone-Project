@@ -11,8 +11,8 @@ import { UserTypeModel } from '../models/UserModel.js'
 export const userRoute = exp.Router()
 
 
-//Resgister user(Public Route)
-userRoute.post('/users', upload.single('profileImageUrl'), async (req, res) => {
+// Register user (Public Route)
+userRoute.post('/users', upload.single('profileImageUrl'), async (req, res, next) => {
     let cloudinaryResult
 
     try {

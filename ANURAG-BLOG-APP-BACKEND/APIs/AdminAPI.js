@@ -35,7 +35,7 @@ adminRoute.get('/stats', verifyToken("ADMIN"), async (req, res) => {
 })
 
 //Get all users (role=USER)
-adminRoute.get('/users', async (req, res) => {
+adminRoute.get('/users', verifyToken("ADMIN"), async (req, res) => {
     try {
         const users = await UserTypeModel.find({ role: 'USER' }, '-password')
         res.status(200).json({ message: "Users list", payload: users })
@@ -45,7 +45,7 @@ adminRoute.get('/users', async (req, res) => {
 })
 
 //Get all authors (role=AUTHOR)
-adminRoute.get('/authors', async (req, res) => {
+adminRoute.get('/authors', verifyToken("ADMIN"), async (req, res) => {
     try {
         const authors = await UserTypeModel.find({ role: 'AUTHOR' }, '-password')
         res.status(200).json({ message: "Authors list", payload: authors })
@@ -55,7 +55,7 @@ adminRoute.get('/authors', async (req, res) => {
 })
 
 //Block user
-adminRoute.get('/block-user/:uid',async(req,res)=>{
+adminRoute.get('/block-user/:uid', verifyToken("ADMIN"), async(req,res)=>{
     let userId=req.params.uid
     let blockedUser=await UserTypeModel.findByIdAndUpdate(userId,{
         $set : {isActive:false}},
@@ -65,7 +65,7 @@ adminRoute.get('/block-user/:uid',async(req,res)=>{
 })
 
 //Unblock user
-adminRoute.get('/unblock-user/:uid',async(req,res)=>{
+adminRoute.get('/unblock-user/:uid', verifyToken("ADMIN"), async(req,res)=>{
     let userId=req.params.uid
     let unblockedUser=await UserTypeModel.findByIdAndUpdate(userId,{
         $set:{isActive:true}},

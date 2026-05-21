@@ -13,9 +13,9 @@ export const checkAuthor=async (req,res,next)=>{
     if(authorizedAuthor.role!="AUTHOR"){
         return res.status(403).json({message :"User is not an Author"})
     }
-    //check is author is active
+    //check if author is active
     if(!authorizedAuthor.isActive){
-        return res.status(403).json({message :"Author accout is deactivated"})
+        return res.status(403).json({message :"Author account is deactivated"})
     }
     //forward req to next
     next()

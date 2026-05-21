@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { useNavigate } from 'react-router'
+import axios from 'axios'
 import { formCard, formTitle, inputClass, submitBtn, loadingClass, errorClass, pageWrapper, formGroup } from '../styles/common'
 
 function AddArticle() {
@@ -15,22 +16,14 @@ function AddArticle() {
     setError(null)
     try {
       const token = localStorage.getItem("token")
-      let res = await fetch("http://localhost:6767/author-api/articles", {
-        method: "POST",
+      // Perform post request using Axios so it passes through the global interceptor.
+      await axios.post("http://localhost:6767/author-api/articles", articleData, {
         headers: {
-          "Content-Type": "application/json",
           "Authorization": `Bearer ${token}`
-        },
-        body: JSON.stringify(articleData)
+        }
       })
-      // if (res.status === 201) {
-      //   navigate("/author-dashboard")
-      // }
-      // else {
-      //   throw new Error("Failed to publish article")
-      // }
     } catch (err) {
-      setError(err.message)
+      setError(err.response?.data?.message || err.message)
     } finally {
       setLoading(false)
     }

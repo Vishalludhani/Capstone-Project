@@ -26,7 +26,7 @@ export const verifyToken = (...allowedRoles) => {
             next()
         } catch (error) {
             if (error.name === 'TokenExpiredError') {
-                return res.status(401).json({ message: "Serrion expired. please login" })
+                return res.status(401).json({ message: "Session expired. please login" })
             }
             if (error.name === "JsonWebTokenError") {
                 return res.status(401).json({ message: "Invalid token. please login again" })

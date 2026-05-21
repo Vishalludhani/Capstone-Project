@@ -11,9 +11,12 @@ import cors from 'cors'
 config()
 const app = exp()
 
-//add CORS middleware
+// Configure CORS middleware to dynamically allow requests from the frontend application.
+// In production, FRONTEND_URL environment variable is checked.
+// In development, it defaults to the local Vite dev server (http://localhost:5173).
+const allowedOrigin = process.env.FRONTEND_URL || 'http://localhost:5173';
 app.use(cors({
-    origin: 'http://localhost:5173', // Allow requests from frontend
+    origin: allowedOrigin,
     credentials: true
 }))
 
@@ -30,8 +33,9 @@ const connectDB = async () => {
     try {
         await connect(process.env.DB_URL)
         console.log("DB Connection success")
-        //start http server
-        app.listen(process.env.PORT, () => console.log("server started"))
+        // Start HTTP server using configured port or default to 6767
+        const port = process.env.PORT || 6767;
+        app.listen(port, () => console.log(`Server started on port ${port}`))
     } catch (err) {
         console.log("err in DB connection", err)
     }

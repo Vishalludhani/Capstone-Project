@@ -26,11 +26,14 @@ commonRoute.post("/login",async(req,res)=>{
     let userCred=req.body
     // call authenticate service
     let {token,user} = await authenticate(userCred)
-    //save token as httpOnly Cookie
-    res.cookie("token",token,{
-        httpOnly:true,
-        sameSite:"lax",
-        secure:false
+    // Save token as an httpOnly cookie.
+    // In production environment, sameSite: "none" and secure: true are used
+    // to allow cross-origin cookie sharing between frontend and backend domains.
+    const isProd = process.env.NODE_ENV === 'production';
+    res.cookie("token", token, {
+        httpOnly: true,
+        sameSite: isProd ? "none" : "lax",
+        secure: isProd
     })
     res.status(200).json({message:"Login successful",payload:user})
 })
@@ -39,10 +42,11 @@ commonRoute.post("/login",async(req,res)=>{
 
 //logout
 commonRoute.get('/logout',(req,res)=>{
+    const isProd = process.env.NODE_ENV === 'production';
     res.clearCookie('token',{
         httpOnly:true,
-        secure:true,
-        sameSite:'lax'
+        secure:isProd,
+        sameSite:isProd ? 'none' : 'lax'
     })
 
     res.status(200).json({message:"Logged Out Successfully"})
@@ -56,7 +60,7 @@ commonRoute.put('/change-password',async(req,res)=>{
     console.log(user.password)
     let authorizedUser = await bcrypt.compare(oldp,user.password)
     if(!authorizedUser){
-        return res.status(404).json({message:"Invlid password, check again"})
+        return res.status(404).json({message:"Invalid password, check again"})
     }
     let hashedpassword= await bcrypt.hash(newp,10)
     let updatedUser=await UserTypeModel.findByIdAndUpdate(user._id,{
