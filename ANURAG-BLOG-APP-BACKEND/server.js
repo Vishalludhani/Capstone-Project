@@ -12,9 +12,13 @@ config()
 const app = exp()
 
 // Configure CORS middleware to dynamically allow requests from the frontend application.
-// In production, FRONTEND_URL environment variable is checked.
+// In production, FRONTEND_URL environment variable is checked, stripping any trailing slash.
 // In development, it defaults to the local Vite dev server (http://localhost:5173).
-const allowedOrigin = process.env.FRONTEND_URL || 'http://localhost:5173';
+let allowedOrigin = process.env.FRONTEND_URL || 'http://localhost:5173';
+if (allowedOrigin.endsWith('/')) {
+    allowedOrigin = allowedOrigin.slice(0, -1);
+}
+
 app.use(cors({
     origin: allowedOrigin,
     credentials: true
